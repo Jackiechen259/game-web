@@ -1,0 +1,77 @@
+name: Games Library CI/CD
+
+# Runs in the web-games-library repository. When game source config or code
+# changes on main, this validates the catalog, builds affected games, generates
+# dist/catalog.json + dist/settings.json, publishes the dist branch, and
+# triggers the portal to redeploy via repository_dispatch.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
+
+concurrency:
+  group: games-library-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate game configs
+        run: node scripts/validate-game-catalog.mjs
+
+      - name: Build all games
+        run: node scripts/build-all-games.mjs
+
+      - name: Check each game built index.html
+        run: node scripts/check-built-games.mjs
+
+      - name: Generate catalog.json and settings.json
+        run: node scripts/generate-catalog.mjs
+
+      - name: Publish to dist branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: dist
+          publish_branch: dist
+          keep_files: false
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+          commit_message: "Publish games dist ${{ github.sha }}"
+
+      - name: Trigger portal redeploy
+        env:
+          GH_TOKEN: ${{ secrets.PORTAL_DISPATCH_TOKEN || secrets.GITHUB_TOKEN }}
+          PORTAL_REPO: ${{ vars.PORTAL_REPO }}
+          PORTAL_DISPATCH_EVENT: games-library-updated
+          SOURCE_REPO: ${{ github.repository }}
+          SOURCE_COMMIT: ${{ github.sha }}
+        run: |
+          node scripts/trigger-portal-deploy.mjs \
+            "$PORTAL_REPO" "$PORTAL_DISPATCH_EVENT" \
+            "$SOURCE_REPO" "$SOURCE_COMMIT"

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "siteName": "Bohan's Web Games",
+  "siteDescription": "Small browser games made by Bohan",
+  "defaultLanguage": "zh-CN",
+  "gamesPerPage": 24,
+  "showBetaGames": true,
+  "showArchivedGamePages": true,
+  "enableSearch": true,
+  "enableCategories": true,
+  "enableRecentlyPlayed": true,
+  "enableFullscreen": true,
+  "enableGamepad": true,
+  "maintenanceMode": false,
+  "featuredGameIds": ["snake"],
+  "navigation": [
+    { "label": "首页", "path": "/" },
+    { "label": "全部游戏", "path": "/games" }
+  ]
+}

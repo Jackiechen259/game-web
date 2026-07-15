@@ -1,0 +1,76 @@
+name: Portal CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [games-library-updated]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: portal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Sync games from games library
+        env:
+          GAMES_REPO: ${{ vars.GAMES_REPO }}
+          GAMES_REF: ${{ vars.GAMES_REF || 'dist' }}
+          GITHUB_TOKEN: ${{ secrets.GAMES_SYNC_TOKEN || secrets.GITHUB_TOKEN }}
+        run: pnpm sync:games
+
+      - name: Validate catalog
+        run: pnpm validate:games
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build portal
+        run: pnpm build:portal
+
+      - name: Upload portal artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-dist
+          path: apps/portal/dist
+
+  # Deploy is environment-specific. Wire this to your hosting (Cloudflare Pages,
+  # Netlify, Vercel, S3, GitHub Pages, etc.). The static output is apps/portal/dist.
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Placeholder deploy
+        run: echo "Deploy apps/portal/dist to your static host."

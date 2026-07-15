@@ -1,0 +1,40 @@
+{
+  "name": "game-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Web game portal with admin, draft/publish flow, preview, deploy status and rollback.",
+  "engines": {
+    "node": ">=23.6.0"
+  },
+  "scripts": {
+    "sync:games": "node scripts/sync-games.ts",
+    "validate:games": "node scripts/validate-game-catalog.ts",
+    "dev:portal": "pnpm --filter @game-platform/portal dev",
+    "dev:api": "node apps/admin-api/src/server.ts",
+    "dev": "pnpm sync:games && pnpm dev:portal",
+    "dev:no-sync": "pnpm dev:portal",
+    "build:portal": "pnpm --filter @game-platform/portal build",
+    "build:no-sync": "pnpm build:portal",
+    "build": "pnpm sync:games && pnpm validate:games && pnpm build:portal",
+    "typecheck": "pnpm -r --parallel --stream typecheck && tsc -p tsconfig.scripts.json --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.18.0",
+    "globals": "^15.14.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.21.0",
+    "vitest": "^3.0.0"
+  },
+  "dependencies": {
+    "@game-platform/game-schema": "workspace:*"
+  },
+  "packageManager": "pnpm@10.29.2"
+}

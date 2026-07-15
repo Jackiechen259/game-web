@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>俄罗斯方块</title>
+    <style>
+      html, body { margin: 0; height: 100%; background: #0b1020; color: #e6edf3; font-family: system-ui, sans-serif; }
+      #wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; }
+      h1 { font-size: 1.4rem; }
+      p { opacity: .7; font-size: .9rem; }
+    </style>
+  </head>
+  <body>
+    <div id="wrap">
+      <h1>俄罗斯方块</h1>
+      <p>该游戏为演示占位页面（fixture）。</p>
+      <p>正式版本由独立游戏仓库构建并发布到 <code>dist</code> 分支。</p>
+    </div>
+    <script>
+      (function () {
+        const SDK = { source: "game-portal-sdk", version: 1, gameId: "tetris" };
+        function send(type, payload) {
+          try { window.parent.postMessage({ ...SDK, type, payload }, "*"); } catch (e) {}
+        }
+        send("GAME_READY", { version: "1.2.0" });
+      })();
+    </script>
+  </body>
+</html>

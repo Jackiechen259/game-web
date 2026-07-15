@@ -1,0 +1,44 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-15T00:00:00Z",
+  "games": [
+    {
+      "id": "snake",
+      "title": "贪吃蛇",
+      "description": "经典贪吃蛇小游戏，方向键控制移动。",
+      "version": "1.0.0",
+      "entry": "games/snake/index.html",
+      "cover": "games/snake/cover.png",
+      "categories": ["休闲"],
+      "tags": ["单人", "键盘"],
+      "status": "published",
+      "featured": true,
+      "controls": ["使用方向键控制移动", "按 P 暂停游戏"],
+      "aspectRatio": "16/9",
+      "displayOrder": 100,
+      "createdAt": "2026-07-01",
+      "updatedAt": "2026-07-15",
+      "iframe": {
+        "allow": ["fullscreen", "autoplay", "gamepad"],
+        "sandbox": ["allow-scripts", "allow-same-origin", "allow-pointer-lock"]
+      }
+    },
+    {
+      "id": "tetris",
+      "title": "俄罗斯方块",
+      "description": "经典方块消除游戏。",
+      "version": "1.2.0",
+      "entry": "games/tetris/index.html",
+      "cover": "games/tetris/cover.png",
+      "categories": ["益智"],
+      "tags": ["单人", "键盘"],
+      "status": "beta",
+      "featured": false,
+      "controls": ["方向键移动", "上键旋转", "空格硬降"],
+      "aspectRatio": "10/16",
+      "displayOrder": 90,
+      "createdAt": "2026-07-02",
+      "updatedAt": "2026-07-14"
+    }
+  ]
+}
